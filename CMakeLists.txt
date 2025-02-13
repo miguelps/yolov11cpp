@@ -1,19 +1,21 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Set the project name in a variable
-set(project_name yolov10_cpp)
+set(project_name yolov11_cpp)
 project(${project_name})
+
 set(CMAKE_CXX_STANDARD 17)
+set(ONNXRUNTIME_VERSION 1.20.1)
+set(CMAKE_OSX_ARCHITECTURES "arm64")
 
 find_package(OpenCV REQUIRED)
 
-# Find ONNX Runtime package
+set(ONNXRUNTIME_DIR "/Users/miguel/idwall/iq-lib/onnx-${ONNXRUNTIME_VERSION}")
+
 find_path(ONNXRUNTIME_INCLUDE_DIR onnxruntime_c_api.h
-    HINTS /opt/homebrew/Cellar/onnxruntime/1.17.1/include/onnxruntime
+    HINTS ${ONNXRUNTIME_DIR}/include
 )
 find_library(ONNXRUNTIME_LIBRARY onnxruntime
-    HINTS /opt/homebrew/Cellar/onnxruntime/1.17.1/lib
-    src/ia/
+    HINTS ${ONNXRUNTIME_DIR}/lib
 )
 
 if(NOT ONNXRUNTIME_INCLUDE_DIR)
@@ -24,7 +26,8 @@ if(NOT ONNXRUNTIME_LIBRARY)
 endif()
 
 add_library(${project_name}-lib
-    
+    detection_utils.cpp
+    image_utils.cpp
 )
 
 target_include_directories(${project_name}-lib PUBLIC src)
@@ -35,17 +38,16 @@ target_link_libraries(${project_name}-lib
     PUBLIC ${ONNXRUNTIME_LIBRARY}
 )
 
-# Add the main executable
-add_executable(${project_name} 
-    ./src/camera_inference.cpp.cpp
+# add_compile_options(-Wno-dangling-gsl)
+add_executable(${project_name}
+    main.cpp
 )
 # target_include_directories(${project_name} PUBLIC ${ONNXRUNTIME_INCLUDE_DIR})
 # target_link_libraries(${project_name} ${project_name}-lib)
 
 # # Add the video executable
-# add_executable(${project_name}_video 
+# add_executable(${project_name}_video
 #     ./src/video.cpp
 # )
 # target_include_directories(${project_name}_video PUBLIC ${ONNXRUNTIME_INCLUDE_DIR})
 # target_link_libraries(${project_name}_video ${project_name}-lib)
-
