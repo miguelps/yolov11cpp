@@ -25,29 +25,19 @@ if(NOT ONNXRUNTIME_LIBRARY)
     message(FATAL_ERROR "ONNX Runtime library not found")
 endif()
 
-add_library(${project_name}-lib
-    detection_utils.cpp
-    image_utils.cpp
-)
-
-target_include_directories(${project_name}-lib PUBLIC src)
-target_include_directories(${project_name}-lib PUBLIC ${ONNXRUNTIME_INCLUDE_DIR})
-
-target_link_libraries(${project_name}-lib
-    PUBLIC ${OpenCV_LIBS}
-    PUBLIC ${ONNXRUNTIME_LIBRARY}
+include_directories(
+    ${ONNXRUNTIME_INCLUDE_DIR}
+    ${OpenCV_LIBS}
 )
 
 # add_compile_options(-Wno-dangling-gsl)
 add_executable(${project_name}
     main.cpp
+    detection_utils.cpp
+    image_utils.cpp
 )
-# target_include_directories(${project_name} PUBLIC ${ONNXRUNTIME_INCLUDE_DIR})
-# target_link_libraries(${project_name} ${project_name}-lib)
 
-# # Add the video executable
-# add_executable(${project_name}_video
-#     ./src/video.cpp
-# )
-# target_include_directories(${project_name}_video PUBLIC ${ONNXRUNTIME_INCLUDE_DIR})
-# target_link_libraries(${project_name}_video ${project_name}-lib)
+target_link_libraries(${project_name}
+    ${OpenCV_LIBS}
+    ${ONNXRUNTIME_LIBRARY}
+)
